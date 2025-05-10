@@ -1,4 +1,4 @@
-package com.freded.file.entity;
+package com.freded.file.client.entity;
 
 import jakarta.ws.rs.FormParam;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.freded.file.entity;
+package com.freded.file.client.entity;
 
 
 import com.freded.dtos.PaginationAndSortingDTO;

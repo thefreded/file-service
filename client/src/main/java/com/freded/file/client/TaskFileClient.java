@@ -1,9 +1,9 @@
-package com.freded.file;
+package com.freded.file.client;
 
 
 import com.freded.dtos.TaskFileDTO;
-import com.freded.file.boundary.TaskFile;
-import com.freded.file.entity.TaskFileUploadDTO;
+import com.freded.file.client.boundary.TaskFile;
+import com.freded.file.client.entity.TaskFileUploadDTO;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 

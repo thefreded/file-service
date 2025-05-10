@@ -1,4 +1,4 @@
-package com.freded.file.client;
+package com.freded.file.client.boundary;
 
 import com.freded.dtos.TaskFileDTO;
 import com.freded.file.client.entity.TaskFileSortAndPaginationDTO;
