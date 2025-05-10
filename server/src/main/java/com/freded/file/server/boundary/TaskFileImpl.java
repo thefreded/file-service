@@ -1,15 +1,16 @@
-package com.freded.file.boundary;
+package com.freded.file.server.boundary;
 
 
 import com.freded.dtos.TaskFileDTO;
 import com.freded.entities.TaskEntity;
-import com.freded.file.CustomWebApplicationException;
-import com.freded.file.controller.TaskFileService;
-import com.freded.file.controller.TaskFileUploadService;
-import com.freded.file.controller.UserService;
-import com.freded.file.entity.TaskFileSortAndPaginationDTO;
-import com.freded.file.entity.TaskFileUploadDTO;
-import com.freded.task.TaskClient;
+import com.freded.file.client.boundary.TaskFile;
+import com.freded.file.server.CustomWebApplicationException;
+import com.freded.file.server.controller.TaskFileService;
+import com.freded.file.server.controller.TaskFileUploadService;
+import com.freded.file.server.controller.UserService;
+import com.freded.file.client.entity.TaskFileSortAndPaginationDTO;
+import com.freded.file.client.entity.TaskFileUploadDTO;
+import com.freded.task.client.TaskClient;
 import jakarta.inject.Inject;
 
 import java.util.List;

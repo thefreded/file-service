@@ -1,11 +1,11 @@
-package com.freded.file.controller;
+package com.freded.file.server.controller;
 
 import com.freded.dtos.TaskFileDTO;
 
 import com.freded.entities.TaskEntity;
 import com.freded.entities.TaskFileEntity;
-import com.freded.file.CustomWebApplicationException;
-import com.freded.file.entity.TaskFileUploadDTO;
+import com.freded.file.server.CustomWebApplicationException;
+import com.freded.file.client.entity.TaskFileUploadDTO;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;

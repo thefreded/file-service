@@ -1,8 +1,8 @@
-package com.freded.file.controller;
+package com.freded.file.server.controller;
 
 import com.freded.entities.TaskFileEntity;
-import com.freded.file.entity.TaskFileSortAndPaginationDTO;
-import com.freded.file.services.PaginationAndSortingService;
+import com.freded.file.client.entity.TaskFileSortAndPaginationDTO;
+import com.freded.file.server.services.PaginationAndSortingService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;

@@ -1,4 +1,4 @@
-package com.freded.file.controller;
+package com.freded.file.server.controller;
 
 import com.freded.dtos.TaskFileDTO;
 import com.freded.entities.TaskFileEntity;

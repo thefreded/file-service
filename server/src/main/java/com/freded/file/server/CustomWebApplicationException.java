@@ -1,4 +1,4 @@
-package com.freded.file;
+package com.freded.file.server;
 
 import jakarta.ws.rs.WebApplicationException;
 import lombok.Getter;

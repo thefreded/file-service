@@ -1,4 +1,4 @@
-package com.freded.file;
+package com.freded.file.server;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
