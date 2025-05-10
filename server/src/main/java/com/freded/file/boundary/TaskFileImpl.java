@@ -11,14 +11,10 @@ import com.freded.file.entity.TaskFileSortAndPaginationDTO;
 import com.freded.file.entity.TaskFileUploadDTO;
 import com.freded.task.TaskClient;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
 
 import java.util.List;
 
-@Path("document")
+
 public class TaskFileImpl implements TaskFile {
     @Inject
     TaskFileService taskFileService;
@@ -33,8 +29,6 @@ public class TaskFileImpl implements TaskFile {
     TaskClient taskClient;
 
 
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Override
     public TaskFileDTO uploadFileToTask(final String taskId, final TaskFileUploadDTO form) {
 

@@ -1,4 +1,4 @@
-package com.freded.file.controller;
+package com.freded.file.services;
 
 import com.freded.dtos.PaginationAndSortingDTO;
 import jakarta.enterprise.context.RequestScoped;
