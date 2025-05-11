@@ -11,7 +11,7 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import java.util.List;
 
 
-@RegisterRestClient(configKey = "file-api")
+
 @RolesAllowed({"user","admin"})
 @Path("document")
 public interface TaskFile {
