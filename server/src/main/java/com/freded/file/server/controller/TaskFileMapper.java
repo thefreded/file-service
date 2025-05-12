@@ -11,7 +11,7 @@ import java.util.List;
 public interface TaskFileMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "uploadedAt", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "uploadedBy", ignore = true)
     @Mapping(target = "task", ignore = true)
     TaskFileEntity toEntity(TaskFileDTO taskFileDTO);
