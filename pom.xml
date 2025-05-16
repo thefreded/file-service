@@ -36,6 +36,11 @@
         <quarkus-rest-client-jackson.version>3.20.0</quarkus-rest-client-jackson.version>
         <task-shared-resources.version>1.0.0-SNAPSHOT</task-shared-resources.version>
         <task-client.version>1.0.0-SNAPSHOT</task-client.version>
+        <github-file-service.url>https://maven.pkg.github.com/thefreded/file-service</github-file-service.url>
+        <github-shared-resources.url>https://maven.pkg.github.com/thefreded/task-shared-resources
+        </github-shared-resources.url>
+        <github-custom-token.url>https://maven.pkg.github.com/thefreded/custom-token-module</github-custom-token.url>
+        <github-task-client.url>>https://maven.pkg.github.com/thefreded/task-service</github-task-client.url>
     </properties>
 
     <dependencyManagement>
@@ -221,4 +226,27 @@
             </properties>
         </profile>
     </profiles>
+
+    <repositories>
+        <repository>
+            <id>github-shared-resources</id>
+            <url>${github-shared-resources.url}</url>
+        </repository>
+        <repository>
+            <id>github-custom-token</id>
+            <url>${github-custom-token.url}</url>
+        </repository>
+        <repository>
+            <id>github-file-client</id>
+            <url>${github-task-client.url}</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>github-file-service</id>
+            <name>File Service Package</name>
+            <url>${github-file-service.url}</url>
+        </repository>
+    </distributionManagement>
 </project>
