@@ -10,7 +10,6 @@
     </parent>
 
     <artifactId>file-client</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
 
     <properties>
         <custom-token-module.version>1.0.0-SNAPSHOT</custom-token-module.version>
