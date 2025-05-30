@@ -1,7 +1,7 @@
 package com.freded.file.server.controller;
 
 import com.freded.dtos.TaskFileDTO;
-import com.freded.entities.TaskFileEntity;
+import com.freded.file.server.entity.TaskFileEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

@@ -6,13 +6,11 @@ import com.freded.file.client.entity.TaskFileUploadDTO;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
-import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import java.util.List;
 
 
-
-@RolesAllowed({"user","admin"})
+@RolesAllowed({"user", "admin"})
 @Path("document")
 public interface TaskFile {
 

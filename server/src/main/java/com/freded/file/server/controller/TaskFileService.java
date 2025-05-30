@@ -2,8 +2,9 @@ package com.freded.file.server.controller;
 
 import com.freded.dtos.TaskFileDTO;
 
-import com.freded.entities.TaskFileEntity;
+
 import com.freded.file.client.entity.TaskFileSortAndPaginationDTO;
+import com.freded.file.server.entity.TaskFileEntity;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 

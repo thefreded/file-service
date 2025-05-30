@@ -1,11 +1,10 @@
 package com.freded.file.server.controller;
 
 import com.freded.dtos.TaskFileDTO;
-
-import com.freded.entities.TaskEntity;
-import com.freded.entities.TaskFileEntity;
-import com.freded.file.server.CustomWebApplicationException;
 import com.freded.file.client.entity.TaskFileUploadDTO;
+import com.freded.file.server.CustomWebApplicationException;
+import com.freded.file.server.entity.TaskEntity;
+import com.freded.file.server.entity.TaskFileEntity;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -35,19 +34,26 @@ public class TaskFileUploadService {
     /**
      * Saves an uploaded file to the server filesystem and creates a database record.
      *
-     * @param task       The task to associate the file with
+     * @param taskId     The task to associate the file with
      * @param uploadDTO  The data transfer object containing file information
      * @param uploadedBy User who uploaded the file
      * @return The created TaskFileEntity
      */
     @Transactional
-    public TaskFileDTO saveFile(TaskEntity task, TaskFileUploadDTO uploadDTO, String uploadedBy) {
+    public TaskFileDTO saveFile(final String taskId, TaskFileUploadDTO uploadDTO, String uploadedBy) {
 
         try {
+            TaskEntity task = entityManager.getReference(TaskEntity.class, taskId);
+
 
             if (task == null) {
                 throw new CustomWebApplicationException("Task not found with ID: ", 400);
             }
+
+            if (!task.getCreatedBy().equals(uploadedBy)) {
+                throw new CustomWebApplicationException("Not allowed to upload task: ", 405);
+            }
+
 
             // Sanitize the filename
             String sanitizedFileName = sanitizeFileName(uploadDTO.getFileName());
@@ -56,7 +62,7 @@ public class TaskFileUploadService {
             String uniqueFileName = UUID.randomUUID() + "_" + sanitizedFileName;
 
             // Create task-specific directory
-            Path taskDir = createTaskDirectory(task.getId());
+            Path taskDir = createTaskDirectory(taskId);
 
             // Create the full file path
             Path filePath = taskDir.resolve(uniqueFileName);
