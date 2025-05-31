@@ -34,7 +34,7 @@
         <quarkus-rest.version>3.20.0</quarkus-rest.version>
         <quarkus-rest-jackson.version>3.20.0</quarkus-rest-jackson.version>
         <quarkus-rest-client-jackson.version>3.20.0</quarkus-rest-client-jackson.version>
-        <task-shared-resources.version>1.0.2</task-shared-resources.version>
+        <task-shared-resources.version>1.0.3</task-shared-resources.version>
         <github-file-service.url>https://maven.pkg.github.com/thefreded/file-service</github-file-service.url>
         <github-shared-resources.url>https://maven.pkg.github.com/thefreded/task-shared-resources
         </github-shared-resources.url>
