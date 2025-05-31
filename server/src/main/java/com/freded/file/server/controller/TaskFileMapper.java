@@ -13,10 +13,9 @@ public interface TaskFileMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "uploadedBy", ignore = true)
-    @Mapping(target = "task", ignore = true)
+    @Mapping(target = "taskId", ignore = true)
     TaskFileEntity toEntity(TaskFileDTO taskFileDTO);
 
-    // @Mapping(target = "task", ignore = true)
     TaskFileDTO toDTO(TaskFileEntity taskFileEntity);
 
     List<TaskFileDTO> toDTOList(List<TaskFileEntity> taskFileEntityList);

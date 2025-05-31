@@ -11,11 +11,20 @@
 
     <artifactId>file-server</artifactId>
 
+    <properties>
+        <task-client.version>1.0.5</task-client.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.freded</groupId>
             <artifactId>file-client</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.freded</groupId>
+            <artifactId>task-client</artifactId>
+            <version>${task-client.version}</version>
         </dependency>
     </dependencies>
 </project>

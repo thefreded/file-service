@@ -7,5 +7,4 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 @RegisterRestClient(configKey = "file-api")
 @RegisterClientHeaders(DynamicAuthHeadersFactory.class)
-public interface TaskFileRestClient extends TaskFile {
-}
+public interface TaskFileRestClient extends TaskFile {}
