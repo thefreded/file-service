@@ -2,7 +2,7 @@ package com.freded.file.server.controller;
 
 import com.freded.dtos.TaskDTO;
 import com.freded.dtos.TaskFileDTO;
-import com.freded.file.client.dto.TaskFileUploadDTO;
+import com.freded.dtos.TaskFileUploadDTO;
 import com.freded.file.server.CustomWebApplicationException;
 import com.freded.file.server.entity.TaskFileEntity;
 import com.freded.task.client.TaskClient;
@@ -34,12 +34,12 @@ public class TaskFileUploadService {
    * Saves an uploaded file to the server filesystem and creates a database record.
    *
    * @param taskId The task to associate the file with
-   * @param uploadDTO The data transfer object containing file information
+   * @param taskFileUploadDTO The data transfer object containing file information
    * @param uploadedBy User who uploaded the file
    * @return The created TaskFileEntity
    */
   @Transactional
-  public TaskFileDTO saveFile(final String taskId, TaskFileUploadDTO uploadDTO, String uploadedBy) {
+  public TaskFileDTO saveFile(final String taskId, TaskFileUploadDTO taskFileUploadDTO, String uploadedBy) {
 
     try {
 
@@ -54,7 +54,7 @@ public class TaskFileUploadService {
       }
 
       // Sanitize the filename
-      String sanitizedFileName = sanitizeFileName(uploadDTO.getFileName());
+      String sanitizedFileName = sanitizeFileName(taskFileUploadDTO.getFileName());
 
       // Create a unique file name to prevent collisions
       String uniqueFileName = UUID.randomUUID() + "_" + sanitizedFileName;
@@ -66,13 +66,13 @@ public class TaskFileUploadService {
       Path filePath = taskDir.resolve(uniqueFileName);
 
       // Save the file to disk using byte array
-      try (ByteArrayInputStream inputStream = new ByteArrayInputStream(uploadDTO.getFileData())) {
+      try (ByteArrayInputStream inputStream = new ByteArrayInputStream(taskFileUploadDTO.getFileData())) {
         Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
       }
       LOG.info("Saved file to: " + filePath);
 
       // Detect file type - use the one provided or detect it if not present
-      String fileType = uploadDTO.getFileType();
+      String fileType = taskFileUploadDTO.getFileType();
       if (fileType == null || fileType.isEmpty()) {
         fileType = detectFileType(filePath);
       }
@@ -90,7 +90,7 @@ public class TaskFileUploadService {
       return taskFileMapper.toDTO(fileEntity);
 
     } catch (IOException ex) {
-      LOG.error("Failed to save file: " + uploadDTO.getFileName(), ex);
+      LOG.error("Failed to save file: " + taskFileUploadDTO.getFileName(), ex);
       throw new CustomWebApplicationException("Failed to save file: " + ex.getMessage(), 500);
     }
   }

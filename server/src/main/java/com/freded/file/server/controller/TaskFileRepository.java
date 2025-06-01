@@ -1,6 +1,6 @@
 package com.freded.file.server.controller;
 
-import com.freded.dtos.TaskFileSortAndPaginationDTO;
+import com.freded.dtos.TaskFilePaginationAndSortingDTO;
 import com.freded.file.server.entity.TaskFileEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -43,7 +43,9 @@ public class TaskFileRepository {
   }
 
   public List<TaskFileEntity> readAll(
-      final String uploadedBy, final String taskId, final TaskFileSortAndPaginationDTO qParams) {
+      final String uploadedBy,
+      final String taskId,
+      final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO) {
 
     CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -58,15 +60,15 @@ public class TaskFileRepository {
         .select(root)
         .where(cb.and(cb.equal(root.get("taskId"), taskIdParam), cb.equal(root.get("uploadedBy"), uploadedByParam)));
 
-    // Apply sorting based on the parameters provided in qParams.
-    paginationAndSortingService.sort(cb, cbQuery, root, qParams);
+    // Apply sorting based on the parameters provided in taskFilePaginationAndSortingDTO.
+    paginationAndSortingService.sort(cb, cbQuery, root, taskFilePaginationAndSortingDTO);
 
     TypedQuery<TaskFileEntity> typedQuery = em.createQuery(cbQuery);
 
     typedQuery.setParameter("uploadedBy", uploadedBy);
     typedQuery.setParameter("taskId", taskId);
 
-    paginationAndSortingService.paginate(typedQuery, qParams);
+    paginationAndSortingService.paginate(typedQuery, taskFilePaginationAndSortingDTO);
 
     return typedQuery.getResultList();
   }

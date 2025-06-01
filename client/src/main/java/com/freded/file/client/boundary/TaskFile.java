@@ -1,8 +1,8 @@
 package com.freded.file.client.boundary;
 
 import com.freded.dtos.TaskFileDTO;
-import com.freded.dtos.TaskFileSortAndPaginationDTO;
-import com.freded.file.client.dto.TaskFileUploadDTO;
+import com.freded.dtos.TaskFilePaginationAndSortingDTO;
+import com.freded.dtos.TaskFileUploadDTO;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -16,14 +16,15 @@ public interface TaskFile {
   @Path("task/{taskId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.MULTIPART_FORM_DATA)
-  TaskFileDTO uploadFileToTask(@PathParam("taskId") final String taskId, TaskFileUploadDTO form);
+  TaskFileDTO uploadFileToTask(@PathParam("taskId") final String taskId, TaskFileUploadDTO taskFileUploadDTO);
 
   @GET
   @Path("task/{taskId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
   List<TaskFileDTO> getFilesForTask(
-      @PathParam("taskId") final String taskId, @BeanParam final TaskFileSortAndPaginationDTO qParams);
+      @PathParam("taskId") final String taskId,
+      @BeanParam final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO);
 
   @GET
   @Path("{taskFileId}")

@@ -1,8 +1,8 @@
 package com.freded.file.client;
 
 import com.freded.dtos.TaskFileDTO;
-import com.freded.dtos.TaskFileSortAndPaginationDTO;
-import com.freded.file.client.dto.TaskFileUploadDTO;
+import com.freded.dtos.TaskFilePaginationAndSortingDTO;
+import com.freded.dtos.TaskFileUploadDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;
@@ -13,15 +13,16 @@ public class TaskFileClient {
 
   @Inject @RestClient TaskFileRestClient taskFileRestClient;
 
-  public TaskFileDTO uploadFileToTask(final String taskId, final TaskFileUploadDTO form) {
-    return taskFileRestClient.uploadFileToTask(taskId, form);
+  public TaskFileDTO uploadFileToTask(final String taskId, final TaskFileUploadDTO taskFileUploadDTO) {
+    return taskFileRestClient.uploadFileToTask(taskId, taskFileUploadDTO);
   }
 
   public TaskFileDTO getFileDetails(final String taskFileId) {
     return taskFileRestClient.getFileDetails(taskFileId);
   }
 
-  public List<TaskFileDTO> getFilesForTask(final String taskId, final TaskFileSortAndPaginationDTO qParams) {
-    return taskFileRestClient.getFilesForTask(taskId, qParams);
+  public List<TaskFileDTO> getFilesForTask(
+      final String taskId, final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO) {
+    return taskFileRestClient.getFilesForTask(taskId, taskFilePaginationAndSortingDTO);
   }
 }

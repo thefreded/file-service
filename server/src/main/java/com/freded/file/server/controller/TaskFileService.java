@@ -1,7 +1,7 @@
 package com.freded.file.server.controller;
 
 import com.freded.dtos.TaskFileDTO;
-import com.freded.dtos.TaskFileSortAndPaginationDTO;
+import com.freded.dtos.TaskFilePaginationAndSortingDTO;
 import com.freded.file.server.entity.TaskFileEntity;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -19,9 +19,12 @@ public class TaskFileService {
   }
 
   public List<TaskFileDTO> getAll(
-      final String taskId, final TaskFileSortAndPaginationDTO qParams, final String currentUser) {
+      final String taskId,
+      final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO,
+      final String currentUser) {
 
-    List<TaskFileEntity> taskFileEntities = taskFileRepository.readAll(currentUser, taskId, qParams);
+    List<TaskFileEntity> taskFileEntities =
+        taskFileRepository.readAll(currentUser, taskId, taskFilePaginationAndSortingDTO);
 
     return taskFileMapper.toDTOList(taskFileEntities);
   }

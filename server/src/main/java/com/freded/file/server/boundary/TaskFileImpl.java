@@ -1,9 +1,9 @@
 package com.freded.file.server.boundary;
 
 import com.freded.dtos.TaskFileDTO;
-import com.freded.dtos.TaskFileSortAndPaginationDTO;
+import com.freded.dtos.TaskFilePaginationAndSortingDTO;
+import com.freded.dtos.TaskFileUploadDTO;
 import com.freded.file.client.boundary.TaskFile;
-import com.freded.file.client.dto.TaskFileUploadDTO;
 import com.freded.file.server.controller.TaskFileService;
 import com.freded.file.server.controller.TaskFileUploadService;
 import com.freded.file.server.controller.UserService;
@@ -18,10 +18,10 @@ public class TaskFileImpl implements TaskFile {
   @Inject TaskFileUploadService fileUploadService;
 
   @Override
-  public TaskFileDTO uploadFileToTask(final String taskId, final TaskFileUploadDTO form) {
+  public TaskFileDTO uploadFileToTask(final String taskId, final TaskFileUploadDTO taskFileUploadDTO) {
 
     String uploadedBy = userService.getUsername();
-    return fileUploadService.saveFile(taskId, form, uploadedBy);
+    return fileUploadService.saveFile(taskId, taskFileUploadDTO, uploadedBy);
   }
 
   @Override
@@ -31,8 +31,9 @@ public class TaskFileImpl implements TaskFile {
   }
 
   @Override
-  public List<TaskFileDTO> getFilesForTask(final String taskId, final TaskFileSortAndPaginationDTO qParams) {
+  public List<TaskFileDTO> getFilesForTask(
+      final String taskId, final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO) {
     String currentUser = userService.getUsername();
-    return taskFileService.getAll(taskId, qParams, currentUser);
+    return taskFileService.getAll(taskId, taskFilePaginationAndSortingDTO, currentUser);
   }
 }
