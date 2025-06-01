@@ -16,7 +16,8 @@ public interface TaskFile {
   @Path("task/{taskId}")
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.MULTIPART_FORM_DATA)
-  TaskFileDTO uploadFileToTask(@PathParam("taskId") final String taskId, TaskFileUploadDTO taskFileUploadDTO);
+  TaskFileDTO uploadFileToTask(
+      @PathParam("taskId") final String taskId, @BeanParam TaskFileUploadDTO taskFileUploadDTO);
 
   @GET
   @Path("task/{taskId}")

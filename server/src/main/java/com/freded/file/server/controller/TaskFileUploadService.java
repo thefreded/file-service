@@ -10,7 +10,6 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -53,8 +52,20 @@ public class TaskFileUploadService {
         throw new CustomWebApplicationException("Not allowed to upload task: ", 403);
       }
 
+      // Get the uploaded file
+      var fileUpload = taskFileUploadDTO.getFileUpload();
+      if (fileUpload == null) {
+        throw new CustomWebApplicationException("No file uploaded", 400);
+      }
+
+      // Use the original filename from FileUpload if not provided in DTO
+      String originalFileName = taskFileUploadDTO.getFileName();
+      if (originalFileName == null || originalFileName.isEmpty()) {
+        originalFileName = fileUpload.fileName();
+      }
+
       // Sanitize the filename
-      String sanitizedFileName = sanitizeFileName(taskFileUploadDTO.getFileName());
+      String sanitizedFileName = sanitizeFileName(originalFileName);
 
       // Create a unique file name to prevent collisions
       String uniqueFileName = UUID.randomUUID() + "_" + sanitizedFileName;
@@ -65,19 +76,20 @@ public class TaskFileUploadService {
       // Create the full file path
       Path filePath = taskDir.resolve(uniqueFileName);
 
-      // Save the file to disk using byte array
-      try (ByteArrayInputStream inputStream = new ByteArrayInputStream(taskFileUploadDTO.getFileData())) {
-        Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-      }
+      // Move the uploaded file to the target location
+      Files.move(fileUpload.uploadedFile(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
       LOG.info("Saved file to: " + filePath);
 
-      // Detect file type - use the one provided or detect it if not present
-      String fileType = taskFileUploadDTO.getFileType();
+      // Try to get content type from FileUpload first
+      String fileType = fileUpload.contentType();
+
+      // detect from file
       if (fileType == null || fileType.isEmpty()) {
         fileType = detectFileType(filePath);
       }
 
-      // Create and persist the file dto
+      // Create and persist the file entity
       TaskFileEntity fileEntity = new TaskFileEntity();
       fileEntity.setFileName(uniqueFileName);
       fileEntity.setFileType(fileType);
@@ -85,7 +97,7 @@ public class TaskFileUploadService {
       fileEntity.setTaskId(taskId);
 
       entityManager.persist(fileEntity);
-      LOG.info("Created file dto with ID: " + fileEntity.getId());
+      LOG.info("Created file entity with ID: " + fileEntity.getId());
 
       return taskFileMapper.toDTO(fileEntity);
 
