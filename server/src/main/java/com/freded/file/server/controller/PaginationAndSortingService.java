@@ -1,6 +1,5 @@
 package com.freded.file.server.controller;
 
-import com.freded.dtos.PaginationAndSortingDTO;
 import com.freded.dtos.TaskFilePaginationAndSortingDTO;
 import com.freded.file.server.entity.TaskFileEntity;
 import jakarta.enterprise.context.RequestScoped;
@@ -42,7 +41,7 @@ public class PaginationAndSortingService {
    * @param typedQuery TypedQuery for task files to apply pagination to
    * @param taskFilePaginationAndSortingDTO Pagination parameters with offset and limit for task files
    */
-  public <T, Q extends PaginationAndSortingDTO> void paginate(
+  void paginate(
       final TypedQuery<TaskFileEntity> typedQuery,
       final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO) {
     typedQuery.setFirstResult(taskFilePaginationAndSortingDTO.getOffset());

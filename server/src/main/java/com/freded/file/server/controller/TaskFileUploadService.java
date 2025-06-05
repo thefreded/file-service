@@ -10,8 +10,6 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import org.jboss.logging.Logger;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +17,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import org.jboss.logging.Logger;
 
 @RequestScoped
 public class TaskFileUploadService {
@@ -28,7 +27,6 @@ public class TaskFileUploadService {
   @Inject EntityManager entityManager;
 
   @Inject TaskFileMapper taskFileMapper;
-
 
   @Inject TaskCacheService taskCacheService;
 
