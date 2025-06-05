@@ -8,7 +8,6 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
-import jakarta.transaction.Transactional;
 import java.util.List;
 
 @ApplicationScoped
@@ -17,13 +16,6 @@ public class TaskFileRepository {
   @Inject EntityManager entityManager;
 
   @Inject PaginationAndSortingService paginationAndSortingService;
-
-  @Transactional
-  public TaskFileEntity save(final TaskFileEntity taskFileEntity) {
-    entityManager.persist(taskFileEntity);
-
-    return taskFileEntity;
-  }
 
   public TaskFileEntity getByUploadedByAndId(final String uploadedBy, final String taskFileId) {
 
