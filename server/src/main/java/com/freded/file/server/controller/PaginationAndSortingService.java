@@ -1,6 +1,8 @@
 package com.freded.file.server.controller;
 
 import com.freded.dtos.PaginationAndSortingDTO;
+import com.freded.dtos.TaskFilePaginationAndSortingDTO;
+import com.freded.file.server.entity.TaskFileEntity;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -13,39 +15,37 @@ public class PaginationAndSortingService {
   private static final String DESC = "DESC";
 
   /**
-   * Applies sorting to a CriteriaQuery based on the provided sorting parameters. The sorting is done by using the field
-   * specified in `qParams.sortBy` and the sorting direction specified in `qParams.sortOrder` (either "asc" for
-   * ascending or "desc" for descending).
+   * Applies sorting to a list of task files.
    *
-   * @param cb The CriteriaBuilder used to construct the query and build expressions for sorting.
-   * @param cbQuery The CriteriaQuery that needs to be modified with sorting order.
-   * @param root The root dto of the query (representing the main table or dto being queried).
-   * @param qParams An object containing sorting parameters, including the field name (`sortBy`) and the order
-   *     (`sortOrder`). This object must extend {@link PaginationAndSortingDTO}.
-   * @param <T> The type of the dto being queried, which will be sorted.
-   * @param <Q> The type of the sorting parameters object, which must extend {@link PaginationAndSortingDTO}.
+   * @param cb CriteriaBuilder for constructing sort expressions
+   * @param cbQuery CriteriaQuery for task files to apply sorting to
+   * @param root Root task file entity being queried
+   * @param taskFilePaginationAndSortingDTO Sorting parameters with sortBy field and sortOrder direction for task files
    */
-  public <T, Q extends PaginationAndSortingDTO> void sort(
-      final CriteriaBuilder cb, final CriteriaQuery<T> cbQuery, final Root<T> root, final Q qParams) {
+  public void sort(
+      final CriteriaBuilder cb,
+      final CriteriaQuery<TaskFileEntity> cbQuery,
+      final Root<TaskFileEntity> root,
+      final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO) {
 
     Order order =
-        DESC.equalsIgnoreCase(qParams.getSortOrder())
-            ? cb.desc(root.get(qParams.getSortBy()))
-            : cb.asc(root.get(qParams.getSortBy()));
+        DESC.equalsIgnoreCase(taskFilePaginationAndSortingDTO.getSortOrder())
+            ? cb.desc(root.get(taskFilePaginationAndSortingDTO.getSortBy()))
+            : cb.asc(root.get(taskFilePaginationAndSortingDTO.getSortBy()));
 
     cbQuery.orderBy(order);
   }
 
   /**
-   * Paginate the dto based on the provided {@link PaginationAndSortingDTO} parameters.
+   * Applies pagination to a list of task files.
    *
-   * @param typedQuery the {@link TypedQuery} to apply pagination to.
-   * @param qParams the {@link PaginationAndSortingDTO} containing pagination options.
-   * @param <T> The type of the dto being queried, which will be sorted.
-   * @param <Q> The type of the pagination parameters object, which must extend {@link PaginationAndSortingDTO}.
+   * @param typedQuery TypedQuery for task files to apply pagination to
+   * @param taskFilePaginationAndSortingDTO Pagination parameters with offset and limit for task files
    */
-  public <T, Q extends PaginationAndSortingDTO> void paginate(final TypedQuery<T> typedQuery, final Q qParams) {
-    typedQuery.setFirstResult(qParams.getOffset());
-    typedQuery.setMaxResults(qParams.getLimit());
+  public <T, Q extends PaginationAndSortingDTO> void paginate(
+      final TypedQuery<TaskFileEntity> typedQuery,
+      final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO) {
+    typedQuery.setFirstResult(taskFilePaginationAndSortingDTO.getOffset());
+    typedQuery.setMaxResults(taskFilePaginationAndSortingDTO.getLimit());
   }
 }

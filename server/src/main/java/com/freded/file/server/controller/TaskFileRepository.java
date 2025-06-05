@@ -5,41 +5,42 @@ import com.freded.file.server.entity.TaskFileEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.ParameterExpression;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 import java.util.List;
 
 @ApplicationScoped
 public class TaskFileRepository {
 
-  @Inject EntityManager em;
+  @Inject EntityManager entityManager;
 
   @Inject PaginationAndSortingService paginationAndSortingService;
 
   @Transactional
   public TaskFileEntity save(final TaskFileEntity taskFileEntity) {
-    em.persist(taskFileEntity);
+    entityManager.persist(taskFileEntity);
 
     return taskFileEntity;
   }
 
   public TaskFileEntity getByUploadedByAndId(final String uploadedBy, final String taskFileId) {
 
-    String queryString =
-        "SELECT taskFile FROM TaskFileEntity taskFile WHERE taskFile.id = :taskFileId AND taskFile.uploadedBy"
-            + " =:uploadedBy";
-    TypedQuery<TaskFileEntity> query = em.createQuery(queryString, TaskFileEntity.class);
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    CriteriaQuery<TaskFileEntity> cq = cb.createQuery(TaskFileEntity.class);
+    Root<TaskFileEntity> taskFile = cq.from(TaskFileEntity.class);
 
-    return query
-        .setParameter("taskFileId", taskFileId)
-        .setParameter("uploadedBy", uploadedBy)
-        .getResultStream()
-        .findFirst()
-        .orElse(null);
+    // Add conditions
+    Predicate idPredicate = cb.equal(taskFile.get("id"), taskFileId);
+    Predicate createdByPredicate = cb.equal(taskFile.get("uploadedBy"), uploadedBy);
+    cq.where(cb.and(idPredicate, createdByPredicate));
+
+    try {
+      return entityManager.createQuery(cq).getSingleResult();
+    } catch (NoResultException e) {
+      return null;
+    }
   }
 
   public List<TaskFileEntity> readAll(
@@ -47,7 +48,7 @@ public class TaskFileRepository {
       final String taskId,
       final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO) {
 
-    CriteriaBuilder cb = em.getCriteriaBuilder();
+    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
     CriteriaQuery<TaskFileEntity> cbQuery = cb.createQuery(TaskFileEntity.class);
 
@@ -63,7 +64,7 @@ public class TaskFileRepository {
     // Apply sorting based on the parameters provided in taskFilePaginationAndSortingDTO.
     paginationAndSortingService.sort(cb, cbQuery, root, taskFilePaginationAndSortingDTO);
 
-    TypedQuery<TaskFileEntity> typedQuery = em.createQuery(cbQuery);
+    TypedQuery<TaskFileEntity> typedQuery = entityManager.createQuery(cbQuery);
 
     typedQuery.setParameter("uploadedBy", uploadedBy);
     typedQuery.setParameter("taskId", taskId);
