@@ -1,11 +1,9 @@
 package com.freded.file.server.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.PrePersist;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class TaskFileEntity {
 
   /** Unique identifier for the file. Auto-generated UUID string. */
-  @Id private String id = UUID.randomUUID().toString();
+  @Id @GeneratedValue private UUID id;
 
   /** Original name of the uploaded file. Must be unique and cannot be null. */
   @NotNull(message = "File name cannot be null")
@@ -31,8 +29,8 @@ public class TaskFileEntity {
   /** MIME type or file extension of the file. */
   private String fileType;
 
-  /** Timestamp when the file was created. Automatically set on dto creation. */
-  private LocalDateTime createdAt;
+  /** Timestamp when the file was created. Automatically set on creation. */
+  private ZonedDateTime createdAt;
 
   /** Username or identifier of the user who uploaded the file. */
   private String uploadedBy;
@@ -40,9 +38,9 @@ public class TaskFileEntity {
   /** The taskId of task this file is associated with. */
   @NotNull private String taskId;
 
-  /** Lifecycle callback to set creation timestamp before persisting dto. */
+  /** Lifecycle callback to set creation timestamp before persisting entity. */
   @PrePersist
   protected void onCreate() {
-    createdAt = LocalDateTime.now();
+    createdAt = ZonedDateTime.now(ZoneOffset.UTC);
   }
 }

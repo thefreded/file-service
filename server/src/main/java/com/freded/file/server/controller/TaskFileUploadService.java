@@ -1,11 +1,10 @@
 package com.freded.file.server.controller;
 
+import com.freded.annotations.LoggedInUser;
 import com.freded.dtos.TaskFileDTO;
 import com.freded.dtos.TaskFileUploadDTO;
 import com.freded.file.server.CustomWebApplicationException;
 import com.freded.file.server.entity.TaskFileEntity;
-import com.freded.file.server.infrastructure.cache.TaskCacheService;
-import com.freded.file.server.infrastructure.events.TaskCreatedEvent;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -16,10 +15,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
 import org.jboss.logging.Logger;
 
 @RequestScoped
+@Transactional
 public class TaskFileUploadService {
   private static final Logger LOG = Logger.getLogger(TaskFileUploadService.class);
   private static final String UPLOADS_FOLDER = "uploads";
@@ -28,28 +27,21 @@ public class TaskFileUploadService {
 
   @Inject TaskFileMapper taskFileMapper;
 
-  @Inject TaskCacheService taskCacheService;
+  @Inject @LoggedInUser String uploadedBy;
 
   /**
    * Saves an uploaded file to the server filesystem and creates a database record.
    *
    * @param taskId The task to associate the file with
    * @param taskFileUploadDTO The data transfer object containing file information
-   * @param uploadedBy User who uploaded the file
    * @return The created TaskFileEntity
    */
-  @Transactional
-  public TaskFileDTO saveFile(final String taskId, TaskFileUploadDTO taskFileUploadDTO, String uploadedBy) {
+  public TaskFileDTO saveFile(final String taskId, final TaskFileUploadDTO taskFileUploadDTO) {
 
     try {
-      TaskCreatedEvent taskEvent = taskCacheService.getTask(taskId).get();
 
-      if (taskEvent == null) {
+      if (taskId == null) {
         throw new CustomWebApplicationException("Task not found with ID: " + taskId, 400);
-      }
-
-      if (!taskEvent.getCreatedBy().equals(uploadedBy)) {
-        throw new CustomWebApplicationException("Not allowed to upload task: " + taskId, 403);
       }
 
       // Get the uploaded file
@@ -101,19 +93,9 @@ public class TaskFileUploadService {
 
       return taskFileMapper.toDTO(fileEntity);
 
-    } catch (CustomWebApplicationException e) {
-      // Re-throw custom exceptions as-is
-      throw e;
-    } catch (ExecutionException e) {
-      LOG.error("Failed to retrieve task from cache: " + taskId, e);
-      Throwable cause = e.getCause();
-      if (cause instanceof RuntimeException) {
-        throw (RuntimeException) cause;
-      }
-      throw new CustomWebApplicationException("Failed to retrieve task: " + cause.getMessage(), 500);
-    } catch (Exception e) {
-      LOG.error("Unexpected error while saving file for task: " + taskId, e);
-      throw new CustomWebApplicationException("Unexpected error occurred: " + e.getMessage(), 500);
+    } catch (IOException ex) {
+      LOG.error("Failed to save file: " + taskFileUploadDTO.getFileName(), ex);
+      throw new CustomWebApplicationException("Failed to save file: " + ex.getMessage(), 500);
     }
   }
 

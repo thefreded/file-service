@@ -10,7 +10,7 @@ import java.util.List;
 
 @RolesAllowed({"user", "admin"})
 @Path("document")
-public interface TaskFile {
+public interface TaskFileResource {
 
   @POST
   @Path("task/{taskId}")
