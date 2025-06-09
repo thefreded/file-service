@@ -1,15 +1,16 @@
 package com.freded.file.server.controller;
 
-import com.freded.annotations.LoggedInUser;
 import com.freded.dtos.TaskFileDTO;
 import com.freded.dtos.TaskFilePaginationAndSortingDTO;
+import com.freded.file.server.common.LoggedInUserInfo;
+import com.freded.file.server.common.annotation.LoggedInUser;
 import com.freded.file.server.entity.TaskFileEntity;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.List;
 
-@RequestScoped
+@ApplicationScoped
 @Transactional
 public class TaskFileService {
 
@@ -17,18 +18,18 @@ public class TaskFileService {
 
   @Inject TaskFileMapper taskFileMapper;
 
-  @Inject @LoggedInUser String currentUser;
+  @Inject @LoggedInUser LoggedInUserInfo loggedInUserInfo;
 
   public TaskFileDTO getFile(final String taskFileId) {
 
-    return taskFileMapper.toDTO(taskFileRepository.getByUploadedByAndId(currentUser, taskFileId));
+    return taskFileMapper.toDTO(taskFileRepository.getByUploadedByAndId(loggedInUserInfo.getUsername(), taskFileId));
   }
 
   public List<TaskFileDTO> getAll(
       final String taskId, final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO) {
 
     List<TaskFileEntity> taskFileEntities =
-        taskFileRepository.readAll(currentUser, taskId, taskFilePaginationAndSortingDTO);
+        taskFileRepository.readAll(loggedInUserInfo.getUsername(), taskId, taskFilePaginationAndSortingDTO);
 
     return taskFileMapper.toDTOList(taskFileEntities);
   }

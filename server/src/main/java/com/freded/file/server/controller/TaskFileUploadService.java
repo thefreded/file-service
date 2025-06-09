@@ -1,11 +1,12 @@
 package com.freded.file.server.controller;
 
-import com.freded.annotations.LoggedInUser;
 import com.freded.dtos.TaskFileDTO;
 import com.freded.dtos.TaskFileUploadDTO;
 import com.freded.file.server.CustomWebApplicationException;
+import com.freded.file.server.common.LoggedInUserInfo;
+import com.freded.file.server.common.annotation.LoggedInUser;
 import com.freded.file.server.entity.TaskFileEntity;
-import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -17,7 +18,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import org.jboss.logging.Logger;
 
-@RequestScoped
+@ApplicationScoped
 @Transactional
 public class TaskFileUploadService {
   private static final Logger LOG = Logger.getLogger(TaskFileUploadService.class);
@@ -27,7 +28,7 @@ public class TaskFileUploadService {
 
   @Inject TaskFileMapper taskFileMapper;
 
-  @Inject @LoggedInUser String uploadedBy;
+  @Inject @LoggedInUser LoggedInUserInfo loggedInUserInfo;
 
   /**
    * Saves an uploaded file to the server filesystem and creates a database record.
@@ -85,7 +86,7 @@ public class TaskFileUploadService {
       TaskFileEntity fileEntity = new TaskFileEntity();
       fileEntity.setFileName(uniqueFileName);
       fileEntity.setFileType(fileType);
-      fileEntity.setUploadedBy(uploadedBy);
+      fileEntity.setUploadedBy(loggedInUserInfo.getUsername());
       fileEntity.setTaskId(taskId);
 
       entityManager.persist(fileEntity);
