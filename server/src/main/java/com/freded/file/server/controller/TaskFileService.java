@@ -9,6 +9,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.UUID;
 
 @ApplicationScoped
 @Transactional
@@ -22,7 +23,8 @@ public class TaskFileService {
 
   public TaskFileDTO getFile(final String taskFileId) {
 
-    return taskFileMapper.toDTO(taskFileRepository.getByUploadedByAndId(loggedInUserInfo.getUsername(), taskFileId));
+    return taskFileMapper.toDTO(
+        taskFileRepository.getByUploadedByAndId(loggedInUserInfo.getUsername(), this.stringToUuid(taskFileId)));
   }
 
   public List<TaskFileDTO> getAll(
@@ -32,5 +34,17 @@ public class TaskFileService {
         taskFileRepository.readAll(loggedInUserInfo.getUsername(), taskId, taskFilePaginationAndSortingDTO);
 
     return taskFileMapper.toDTOList(taskFileEntities);
+  }
+
+  private UUID stringToUuid(String taskId) {
+    if (taskId == null || taskId.trim().isEmpty()) {
+      throw new IllegalArgumentException("Task ID cannot be null or empty");
+    }
+
+    try {
+      return UUID.fromString(taskId.trim());
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException("Invalid UUID format: " + taskId, e);
+    }
   }
 }

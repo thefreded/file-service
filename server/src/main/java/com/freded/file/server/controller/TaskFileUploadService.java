@@ -33,7 +33,7 @@ public class TaskFileUploadService {
   /**
    * Saves an uploaded file to the server filesystem and creates a database record.
    *
-   * @param taskId The task to associate the file with
+   * @param taskId The taskId of the task to associate the file with
    * @param taskFileUploadDTO The data transfer object containing file information
    * @return The created TaskFileEntity
    */

@@ -9,6 +9,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import java.util.List;
+import java.util.UUID;
 
 @ApplicationScoped
 public class TaskFileRepository {
@@ -17,7 +18,7 @@ public class TaskFileRepository {
 
   @Inject PaginationAndSortingService paginationAndSortingService;
 
-  public TaskFileEntity getByUploadedByAndId(final String uploadedBy, final String taskFileId) {
+  public TaskFileEntity getByUploadedByAndId(final String uploadedBy, final UUID taskFileId) {
 
     CriteriaBuilder cb = entityManager.getCriteriaBuilder();
     CriteriaQuery<TaskFileEntity> cq = cb.createQuery(TaskFileEntity.class);
