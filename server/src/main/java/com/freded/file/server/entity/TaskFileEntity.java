@@ -1,6 +1,9 @@
 package com.freded.file.server.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.validation.constraints.NotNull;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -21,10 +24,13 @@ public class TaskFileEntity {
   /** Unique identifier for the file. Auto-generated UUID string. */
   @Id @GeneratedValue private UUID id;
 
-  /** Original name of the uploaded file. Must be unique and cannot be null. */
+  /** Original name of the uploaded file. */
   @NotNull(message = "File name cannot be null")
-  @Column(unique = true, nullable = false)
   private String fileName;
+
+  /** Name /path to object on minion */
+  @NotNull(message = "Object name cannot be null")
+  private String objectName;
 
   /** MIME type or file extension of the file. */
   private String fileType;

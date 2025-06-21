@@ -10,162 +10,99 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
-import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.UUID;
 import org.jboss.logging.Logger;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
 
 @ApplicationScoped
 @Transactional
 public class TaskFileUploadService {
+
   private static final Logger LOG = Logger.getLogger(TaskFileUploadService.class);
-  private static final String UPLOADS_FOLDER = "uploads";
 
   @Inject EntityManager entityManager;
-
   @Inject TaskFileMapper taskFileMapper;
-
   @Inject @LoggedInUser LoggedInUserInfo loggedInUserInfo;
+  @Inject MinioUploadService minioUploadService;
 
-  /**
-   * Saves an uploaded file to the server filesystem and creates a database record.
-   *
-   * @param taskId The taskId of the task to associate the file with
-   * @param taskFileUploadDTO The data transfer object containing file information
-   * @return The created TaskFileEntity
-   */
   public TaskFileDTO saveFile(final String taskId, final TaskFileUploadDTO taskFileUploadDTO) {
-
     try {
+      validateInput(taskId, taskFileUploadDTO);
 
-      if (taskId == null) {
-        throw new CustomWebApplicationException("Task not found with ID: " + taskId, 400);
-      }
-
-      // Get the uploaded file
       var fileUpload = taskFileUploadDTO.getFileUpload();
-      if (fileUpload == null) {
-        throw new CustomWebApplicationException("No file uploaded", 400);
-      }
+      String loggedInUsername = loggedInUserInfo.getUsername();
 
-      // Use the original filename from FileUpload if not provided in DTO
-      String originalFileName = taskFileUploadDTO.getFileName();
-      if (originalFileName == null || originalFileName.isEmpty()) {
-        originalFileName = fileUpload.fileName();
-      }
-
-      // Sanitize the filename
-      String sanitizedFileName = sanitizeFileName(originalFileName);
-
-      // Create a unique file name to prevent collisions
-      String uniqueFileName = UUID.randomUUID() + "_" + sanitizedFileName;
-
-      // Create task-specific directory
-      Path taskDir = createTaskDirectory(taskId);
-
-      // Create the full file path
-      Path filePath = taskDir.resolve(uniqueFileName);
-
-      // Move the uploaded file to the target location
-      Files.move(fileUpload.uploadedFile(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-      LOG.info("Saved file to: " + filePath);
-
-      // Try to get content type from FileUpload first
+      String sanitizedFileName = extractAndSanitizeFileName(fileUpload, taskFileUploadDTO);
       String fileType = fileUpload.contentType();
+      String objectName = buildObjectName(loggedInUsername, taskId, sanitizedFileName);
 
-      // detect from file
-      if (fileType == null || fileType.isEmpty()) {
-        fileType = detectFileType(filePath);
-      }
+      uploadToMinio(fileUpload, objectName, fileType);
+      TaskFileEntity fileEntity = createFileEntity(sanitizedFileName, fileType, objectName, loggedInUsername, taskId);
 
-      // Create and persist the file entity
-      TaskFileEntity fileEntity = new TaskFileEntity();
-      fileEntity.setFileName(uniqueFileName);
-      fileEntity.setFileType(fileType);
-      fileEntity.setUploadedBy(loggedInUserInfo.getUsername());
-      fileEntity.setTaskId(taskId);
+      return saveAndReturnDTO(fileEntity);
 
-      entityManager.persist(fileEntity);
-      LOG.info("Created file entity with ID: " + fileEntity.getId());
-
-      return taskFileMapper.toDTO(fileEntity);
-
-    } catch (IOException ex) {
-      LOG.error("Failed to save file: " + taskFileUploadDTO.getFileName(), ex);
+    } catch (Exception ex) {
+      handleError(taskFileUploadDTO.getFileName(), ex);
       throw new CustomWebApplicationException("Failed to save file: " + ex.getMessage(), 500);
     }
   }
 
-  /** Creates the directory where task files will be stored. */
-  private Path createTaskDirectory(String taskId) throws IOException {
-    Path taskDir = Paths.get(getBasePath(), UPLOADS_FOLDER, sanitizePath(taskId));
-    if (!Files.exists(taskDir)) {
-      Files.createDirectories(taskDir);
+  private void validateInput(String taskId, TaskFileUploadDTO taskFileUploadDTO) {
+    if (taskId == null || taskId.isEmpty()) {
+      throw new CustomWebApplicationException("Task not found with ID", 400);
     }
-    return taskDir;
+
+    if (taskFileUploadDTO.getFileUpload() == null) {
+      throw new CustomWebApplicationException("No file uploaded", 400);
+    }
   }
 
-  /** Gets the base path for file storage. */
-  private String getBasePath() {
-    return System.getProperty("user.dir");
+  private String extractAndSanitizeFileName(FileUpload fileUpload, TaskFileUploadDTO taskFileUploadDTO) {
+    String originalFileName = fileUpload.fileName();
+    if (originalFileName == null || originalFileName.isEmpty()) {
+      originalFileName = taskFileUploadDTO.getFileName();
+    }
+    return sanitizeFileName(originalFileName);
   }
 
-  /** Sanitizes a path segment to prevent directory traversal. */
-  private String sanitizePath(String path) {
-    return path.replaceAll("[^a-zA-Z0-9-]", "_");
+  private String buildObjectName(String username, String taskId, String fileName) {
+    return String.format("user/%s/%s/%s", username, taskId, fileName);
   }
 
-  /** Sanitizes a filename to prevent security issues. */
+  private void uploadToMinio(FileUpload fileUpload, String objectName, String fileType) throws Exception {
+    Path filePath = fileUpload.uploadedFile();
+    try (InputStream inputStream = Files.newInputStream(filePath)) {
+      minioUploadService.uploadFile(objectName, inputStream, fileUpload.size(), fileType);
+    }
+  }
+
+  private TaskFileEntity createFileEntity(
+      String fileName, String fileType, String objectName, String uploadedBy, String taskId) {
+    TaskFileEntity fileEntity = new TaskFileEntity();
+    fileEntity.setFileName(fileName);
+    fileEntity.setFileType(fileType);
+    fileEntity.setObjectName(objectName);
+    fileEntity.setUploadedBy(uploadedBy);
+    fileEntity.setTaskId(taskId);
+    return fileEntity;
+  }
+
+  private TaskFileDTO saveAndReturnDTO(TaskFileEntity fileEntity) {
+    entityManager.persist(fileEntity);
+    LOG.info("Created file entity with ID: " + fileEntity.getId());
+    return taskFileMapper.toDTO(fileEntity);
+  }
+
+  private void handleError(String fileName, Exception ex) {
+    LOG.error("Failed to save file: " + fileName, ex);
+  }
+
   private String sanitizeFileName(String fileName) {
     if (fileName == null || fileName.isEmpty()) {
       return "unknown_file";
     }
-    String name = Paths.get(fileName).getFileName().toString();
-
-    // Remove potentially dangerous characters
-    return name.replaceAll("[^a-zA-Z0-9._-]", "_");
-  }
-
-  /** Detects file type using Java's built-in mechanism with fallback to extension-based detection. */
-  private String detectFileType(Path filePath) throws IOException {
-
-    String contentType = Files.probeContentType(filePath);
-
-    if (contentType == null || contentType.isEmpty()) {
-      String fileName = filePath.getFileName().toString().toLowerCase();
-      int dotIndex = fileName.lastIndexOf('.');
-
-      if (dotIndex > 0) {
-        switch (fileName.substring(dotIndex)) {
-          case ".pdf":
-            return "application/pdf";
-          case ".jpg":
-          case ".jpeg":
-            return "image/jpeg";
-          case ".png":
-            return "image/png";
-          case ".txt":
-            return "text/plain";
-          case ".doc":
-          case ".docx":
-            return "application/msword";
-          case ".xls":
-          case ".xlsx":
-            return "application/vnd.ms-excel";
-          case ".csv":
-            return "text/csv";
-            // Add other common types as needed
-        }
-      }
-
-      // Default if we can't determine it
-      return "application/octet-stream";
-    }
-
-    return contentType;
+    return fileName.replaceAll("[^a-zA-Z0-9._-]", "_");
   }
 }

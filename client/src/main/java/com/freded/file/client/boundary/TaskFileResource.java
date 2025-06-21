@@ -22,7 +22,6 @@ public interface TaskFileResource {
   @GET
   @Path("task/{taskId}")
   @Produces(MediaType.APPLICATION_JSON)
-  @Consumes(MediaType.APPLICATION_JSON)
   List<TaskFileDTO> getFilesForTask(
       @PathParam("taskId") final String taskId,
       @BeanParam final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO);
@@ -30,6 +29,10 @@ public interface TaskFileResource {
   @GET
   @Path("{taskFileId}")
   @Produces(MediaType.APPLICATION_JSON)
-  @Consumes(MediaType.APPLICATION_JSON)
   TaskFileDTO getFileDetails(@PathParam("taskFileId") final String taskFileId);
+
+  @GET
+  @Path("preview/{taskFileId}")
+  @Produces(MediaType.TEXT_PLAIN)
+  String getFileUrl(@PathParam("taskFileId") final String taskFileId);
 }

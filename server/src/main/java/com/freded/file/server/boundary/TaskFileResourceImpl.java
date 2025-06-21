@@ -26,6 +26,11 @@ public class TaskFileResourceImpl implements TaskFileResource {
   }
 
   @Override
+  public String getFileUrl(String taskFileId) {
+    return taskFileService.getFileUrl(taskFileId);
+  }
+
+  @Override
   public List<TaskFileDTO> getFilesForTask(
       final String taskId, final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO) {
     return taskFileService.getAll(taskId, taskFilePaginationAndSortingDTO);

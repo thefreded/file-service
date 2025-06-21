@@ -4,16 +4,20 @@ import com.freded.common.LoggedInUserInfo;
 import com.freded.common.annotation.LoggedInUser;
 import com.freded.dtos.TaskFileDTO;
 import com.freded.dtos.TaskFilePaginationAndSortingDTO;
+import com.freded.file.server.CustomWebApplicationException;
 import com.freded.file.server.entity.TaskFileEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
+import org.jboss.logging.Logger;
 
 @ApplicationScoped
 @Transactional
 public class TaskFileService {
+
+  private static final Logger LOG = Logger.getLogger(TaskFileService.class);
 
   @Inject TaskFileRepository taskFileRepository;
 
@@ -21,10 +25,28 @@ public class TaskFileService {
 
   @Inject @LoggedInUser LoggedInUserInfo loggedInUserInfo;
 
+  @Inject MinioUploadService minioUploadService;
+
   public TaskFileDTO getFile(final String taskFileId) {
 
     return taskFileMapper.toDTO(
         taskFileRepository.getByUploadedByAndId(loggedInUserInfo.getUsername(), this.stringToUuid(taskFileId)));
+  }
+
+  public String getFileUrl(final String taskFileId) {
+    TaskFileEntity taskFileEntity =
+        taskFileRepository.getByUploadedByAndId(loggedInUserInfo.getUsername(), this.stringToUuid(taskFileId));
+
+    if (taskFileEntity == null) {
+      throw new CustomWebApplicationException("File not found for user", 404);
+    }
+
+    try {
+      return minioUploadService.getTempUrl(taskFileEntity.getObjectName());
+    } catch (Exception ex) {
+      LOG.error("Failed to generate temporary URL for file: " + taskFileId, ex);
+      throw new CustomWebApplicationException("Failed to generate file URL: " + ex.getMessage(), 500);
+    }
   }
 
   public List<TaskFileDTO> getAll(
