@@ -2,8 +2,8 @@ package com.freded.file.server.controller;
 
 import com.freded.common.LoggedInUserInfo;
 import com.freded.common.annotation.LoggedInUser;
-import com.freded.dtos.TaskFileDTO;
-import com.freded.dtos.TaskFilePaginationAndSortingDTO;
+import com.freded.file.client.dto.TaskFileDTO;
+import com.freded.file.client.dto.TaskFilePaginationAndSortingDTO;
 import com.freded.file.server.CustomWebApplicationException;
 import com.freded.file.server.entity.TaskFileEntity;
 import jakarta.enterprise.context.ApplicationScoped;

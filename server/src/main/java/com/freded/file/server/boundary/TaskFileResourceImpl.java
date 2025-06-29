@@ -1,9 +1,9 @@
 package com.freded.file.server.boundary;
 
-import com.freded.dtos.TaskFileDTO;
-import com.freded.dtos.TaskFilePaginationAndSortingDTO;
-import com.freded.dtos.TaskFileUploadDTO;
 import com.freded.file.client.boundary.TaskFileResource;
+import com.freded.file.client.dto.TaskFileDTO;
+import com.freded.file.client.dto.TaskFilePaginationAndSortingDTO;
+import com.freded.file.client.dto.TaskFileUploadDTO;
 import com.freded.file.server.controller.TaskFileService;
 import com.freded.file.server.controller.TaskFileUploadService;
 import jakarta.inject.Inject;

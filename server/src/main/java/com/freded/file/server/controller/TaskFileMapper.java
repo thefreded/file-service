@@ -1,6 +1,6 @@
 package com.freded.file.server.controller;
 
-import com.freded.dtos.TaskFileDTO;
+import com.freded.file.client.dto.TaskFileDTO;
 import com.freded.file.server.entity.TaskFileEntity;
 import java.util.List;
 import org.mapstruct.Mapper;

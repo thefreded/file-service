@@ -1,8 +1,8 @@
 package com.freded.file.client.boundary;
 
-import com.freded.dtos.TaskFileDTO;
-import com.freded.dtos.TaskFilePaginationAndSortingDTO;
-import com.freded.dtos.TaskFileUploadDTO;
+import com.freded.file.client.dto.TaskFileDTO;
+import com.freded.file.client.dto.TaskFilePaginationAndSortingDTO;
+import com.freded.file.client.dto.TaskFileUploadDTO;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;

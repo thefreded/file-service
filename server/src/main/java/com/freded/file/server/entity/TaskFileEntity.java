@@ -44,7 +44,7 @@ public class TaskFileEntity {
   /** The taskId of task this file is associated with. */
   @NotNull private String taskId;
 
-  /** Lifecycle callback to set creation timestamp before persisting entity. */
+  /** Lifecycle callback to set creation timestamp before persisting dto. */
   @PrePersist
   protected void onCreate() {
     createdAt = ZonedDateTime.now(ZoneOffset.UTC);

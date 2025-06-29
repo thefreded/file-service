@@ -2,8 +2,8 @@ package com.freded.file.server.controller;
 
 import com.freded.common.LoggedInUserInfo;
 import com.freded.common.annotation.LoggedInUser;
-import com.freded.dtos.TaskFileDTO;
-import com.freded.dtos.TaskFileUploadDTO;
+import com.freded.file.client.dto.TaskFileDTO;
+import com.freded.file.client.dto.TaskFileUploadDTO;
 import com.freded.file.server.CustomWebApplicationException;
 import com.freded.file.server.entity.TaskFileEntity;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -91,7 +91,7 @@ public class TaskFileUploadService {
 
   private TaskFileDTO saveAndReturnDTO(TaskFileEntity fileEntity) {
     entityManager.persist(fileEntity);
-    LOG.info("Created file entity with ID: " + fileEntity.getId());
+    LOG.info("Created file dto with ID: " + fileEntity.getId());
     return taskFileMapper.toDTO(fileEntity);
   }
 

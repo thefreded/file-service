@@ -1,6 +1,6 @@
 package com.freded.file.server.controller;
 
-import com.freded.dtos.TaskFilePaginationAndSortingDTO;
+import com.freded.file.client.dto.TaskFilePaginationAndSortingDTO;
 import com.freded.file.server.entity.TaskFileEntity;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.persistence.TypedQuery;
@@ -18,7 +18,7 @@ public class PaginationAndSortingService {
    *
    * @param cb CriteriaBuilder for constructing sort expressions
    * @param cbQuery CriteriaQuery for task files to apply sorting to
-   * @param root Root task file entity being queried
+   * @param root Root task file dto being queried
    * @param taskFilePaginationAndSortingDTO Sorting parameters with sortBy field and sortOrder direction for task files
    */
   public void sort(
