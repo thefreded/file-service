@@ -1,5 +1,6 @@
 package com.freded.file.server.controller;
 
+import com.freded.common.util.PaginationAndSortingService;
 import com.freded.file.client.dto.TaskFilePaginationAndSortingDTO;
 import com.freded.file.server.entity.TaskFileEntity;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -15,8 +16,6 @@ import java.util.UUID;
 public class TaskFileRepository {
 
   @Inject EntityManager entityManager;
-
-  @Inject PaginationAndSortingService paginationAndSortingService;
 
   public TaskFileEntity getByUploadedByAndId(final String uploadedBy, final UUID taskFileId) {
 
@@ -55,14 +54,14 @@ public class TaskFileRepository {
         .where(cb.and(cb.equal(root.get("taskId"), taskIdParam), cb.equal(root.get("uploadedBy"), uploadedByParam)));
 
     // Apply sorting based on the parameters provided in taskFilePaginationAndSortingDTO.
-    paginationAndSortingService.sort(cb, cbQuery, root, taskFilePaginationAndSortingDTO);
+    PaginationAndSortingService.sort(cb, cbQuery, root, taskFilePaginationAndSortingDTO);
 
     TypedQuery<TaskFileEntity> typedQuery = entityManager.createQuery(cbQuery);
 
     typedQuery.setParameter("uploadedBy", uploadedBy);
     typedQuery.setParameter("taskId", taskId);
 
-    paginationAndSortingService.paginate(typedQuery, taskFilePaginationAndSortingDTO);
+    PaginationAndSortingService.paginate(typedQuery, taskFilePaginationAndSortingDTO);
 
     return typedQuery.getResultList();
   }
