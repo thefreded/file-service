@@ -10,6 +10,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.BadRequestException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,15 +32,16 @@ public class TaskFileUploadService {
     try {
       validateInput(taskId, taskFileUploadDTO);
 
-      var fileUpload = taskFileUploadDTO.getFileUpload();
-      String loggedInUsername = loggedInUserInfo.getUsername();
+      final var fileUpload = taskFileUploadDTO.getFileUpload();
+      final String loggedInUsername = loggedInUserInfo.getUsername();
 
-      String sanitizedFileName = extractAndSanitizeFileName(fileUpload, taskFileUploadDTO);
-      String fileType = fileUpload.contentType();
-      String objectName = buildObjectName(loggedInUsername, taskId, sanitizedFileName);
+      final String sanitizedFileName = extractAndSanitizeFileName(fileUpload, taskFileUploadDTO);
+      final String fileType = fileUpload.contentType();
+      final String objectName = buildObjectName(loggedInUsername, taskId, sanitizedFileName);
 
       uploadToMinio(fileUpload, objectName, fileType);
-      TaskFileEntity fileEntity = createFileEntity(sanitizedFileName, fileType, objectName, loggedInUsername, taskId);
+      final TaskFileEntity fileEntity =
+          createFileEntity(sanitizedFileName, fileType, objectName, loggedInUsername, taskId);
 
       return saveAndReturnDTO(fileEntity);
 
@@ -72,7 +74,7 @@ public class TaskFileUploadService {
   }
 
   private void uploadToMinio(FileUpload fileUpload, String objectName, String fileType) throws Exception {
-    Path filePath = fileUpload.uploadedFile();
+    final Path filePath = fileUpload.uploadedFile();
     try (InputStream inputStream = Files.newInputStream(filePath)) {
       minioUploadService.uploadFile(objectName, inputStream, fileUpload.size(), fileType);
     }
@@ -80,7 +82,7 @@ public class TaskFileUploadService {
 
   private TaskFileEntity createFileEntity(
       String fileName, String fileType, String objectName, String uploadedBy, String taskId) {
-    TaskFileEntity fileEntity = new TaskFileEntity();
+    final TaskFileEntity fileEntity = new TaskFileEntity();
     fileEntity.setFileName(fileName);
     fileEntity.setFileType(fileType);
     fileEntity.setObjectName(objectName);
@@ -101,7 +103,7 @@ public class TaskFileUploadService {
 
   private String sanitizeFileName(String fileName) {
     if (fileName == null || fileName.isEmpty()) {
-      return "unknown_file";
+      throw new BadRequestException("Filename must not be null or empty");
     }
     return fileName.replaceAll("[^a-zA-Z0-9._-]", "_");
   }

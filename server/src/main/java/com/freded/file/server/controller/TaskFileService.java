@@ -34,7 +34,7 @@ public class TaskFileService {
   }
 
   public String getFileUrl(final String taskFileId) {
-    TaskFileEntity taskFileEntity =
+    final TaskFileEntity taskFileEntity =
         taskFileRepository.getByUploadedByAndId(loggedInUserInfo.getUsername(), this.stringToUuid(taskFileId));
 
     if (taskFileEntity == null) {
@@ -52,7 +52,7 @@ public class TaskFileService {
   public List<TaskFileDTO> getAll(
       final String taskId, final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO) {
 
-    List<TaskFileEntity> taskFileEntities =
+    final List<TaskFileEntity> taskFileEntities =
         taskFileRepository.readAll(loggedInUserInfo.getUsername(), taskId, taskFilePaginationAndSortingDTO);
 
     return taskFileMapper.toDTOList(taskFileEntities);

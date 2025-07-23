@@ -19,13 +19,13 @@ public class TaskFileRepository {
 
   public TaskFileEntity getByUploadedByAndId(final String uploadedBy, final UUID taskFileId) {
 
-    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-    CriteriaQuery<TaskFileEntity> cq = cb.createQuery(TaskFileEntity.class);
-    Root<TaskFileEntity> taskFile = cq.from(TaskFileEntity.class);
+    final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    final CriteriaQuery<TaskFileEntity> cq = cb.createQuery(TaskFileEntity.class);
+    final Root<TaskFileEntity> taskFile = cq.from(TaskFileEntity.class);
 
     // Add conditions
-    Predicate idPredicate = cb.equal(taskFile.get("id"), taskFileId);
-    Predicate createdByPredicate = cb.equal(taskFile.get("uploadedBy"), uploadedBy);
+    final Predicate idPredicate = cb.equal(taskFile.get("id"), taskFileId);
+    final Predicate createdByPredicate = cb.equal(taskFile.get("uploadedBy"), uploadedBy);
     cq.where(cb.and(idPredicate, createdByPredicate));
 
     try {
@@ -40,14 +40,14 @@ public class TaskFileRepository {
       final String taskId,
       final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO) {
 
-    CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+    final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
-    CriteriaQuery<TaskFileEntity> cbQuery = cb.createQuery(TaskFileEntity.class);
+    final CriteriaQuery<TaskFileEntity> cbQuery = cb.createQuery(TaskFileEntity.class);
 
-    Root<TaskFileEntity> root = cbQuery.from(TaskFileEntity.class);
+    final Root<TaskFileEntity> root = cbQuery.from(TaskFileEntity.class);
 
-    ParameterExpression<String> taskIdParam = cb.parameter(String.class, "taskId");
-    ParameterExpression<String> uploadedByParam = cb.parameter(String.class, "uploadedBy");
+    final ParameterExpression<String> taskIdParam = cb.parameter(String.class, "taskId");
+    final ParameterExpression<String> uploadedByParam = cb.parameter(String.class, "uploadedBy");
 
     cbQuery
         .select(root)
@@ -56,7 +56,7 @@ public class TaskFileRepository {
     // Apply sorting based on the parameters provided in taskFilePaginationAndSortingDTO.
     PaginationAndSortingService.sort(cb, cbQuery, root, taskFilePaginationAndSortingDTO);
 
-    TypedQuery<TaskFileEntity> typedQuery = entityManager.createQuery(cbQuery);
+    final TypedQuery<TaskFileEntity> typedQuery = entityManager.createQuery(cbQuery);
 
     typedQuery.setParameter("uploadedBy", uploadedBy);
     typedQuery.setParameter("taskId", taskId);

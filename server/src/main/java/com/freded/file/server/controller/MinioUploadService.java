@@ -35,7 +35,7 @@ public class MinioUploadService {
    * @return temporary URL string
    */
   public String getTempUrl(String objectName, int expiryHours) throws Exception {
-    String url =
+    final String url =
         minioClient.getPresignedObjectUrl(
             GetPresignedObjectUrlArgs.builder()
                 .method(Method.GET)
