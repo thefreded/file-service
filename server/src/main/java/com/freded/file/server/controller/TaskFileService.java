@@ -27,15 +27,14 @@ public class TaskFileService {
 
   @Inject MinioUploadService minioUploadService;
 
-  public TaskFileDTO getFile(final String taskFileId) {
+  public TaskFileDTO getFile(final UUID taskFileId) {
 
-    return taskFileMapper.toDTO(
-        taskFileRepository.getByUploadedByAndId(loggedInUserInfo.getUsername(), this.stringToUuid(taskFileId)));
+    return taskFileMapper.toDTO(taskFileRepository.getByUploadedByAndId(loggedInUserInfo.getUsername(), taskFileId));
   }
 
-  public String getFileUrl(final String taskFileId) {
+  public String getFileUrl(final UUID taskFileId) {
     final TaskFileEntity taskFileEntity =
-        taskFileRepository.getByUploadedByAndId(loggedInUserInfo.getUsername(), this.stringToUuid(taskFileId));
+        taskFileRepository.getByUploadedByAndId(loggedInUserInfo.getUsername(), taskFileId);
 
     if (taskFileEntity == null) {
       throw new CustomWebApplicationException("File not found for user", 404);
@@ -50,23 +49,11 @@ public class TaskFileService {
   }
 
   public List<TaskFileDTO> getAll(
-      final String taskId, final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO) {
+      final UUID taskId, final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO) {
 
     final List<TaskFileEntity> taskFileEntities =
         taskFileRepository.readAll(loggedInUserInfo.getUsername(), taskId, taskFilePaginationAndSortingDTO);
 
     return taskFileMapper.toDTOList(taskFileEntities);
-  }
-
-  private UUID stringToUuid(String taskId) {
-    if (taskId == null || taskId.trim().isEmpty()) {
-      throw new IllegalArgumentException("Task ID cannot be null or empty");
-    }
-
-    try {
-      return UUID.fromString(taskId.trim());
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Invalid UUID format: " + taskId, e);
-    }
   }
 }

@@ -14,6 +14,7 @@ import jakarta.ws.rs.BadRequestException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.UUID;
 import org.jboss.logging.Logger;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
@@ -28,7 +29,7 @@ public class TaskFileUploadService {
   @Inject @LoggedInUser LoggedInUserInfo loggedInUserInfo;
   @Inject MinioUploadService minioUploadService;
 
-  public TaskFileDTO saveFile(final String taskId, final TaskFileUploadDTO taskFileUploadDTO) {
+  public TaskFileDTO saveFile(final UUID taskId, final TaskFileUploadDTO taskFileUploadDTO) {
     try {
       validateInput(taskId, taskFileUploadDTO);
 
@@ -51,8 +52,8 @@ public class TaskFileUploadService {
     }
   }
 
-  private void validateInput(String taskId, TaskFileUploadDTO taskFileUploadDTO) {
-    if (taskId == null || taskId.isEmpty()) {
+  private void validateInput(UUID taskId, TaskFileUploadDTO taskFileUploadDTO) {
+    if (taskId == null) {
       throw new CustomWebApplicationException("Task not found with ID", 400);
     }
 
@@ -69,7 +70,7 @@ public class TaskFileUploadService {
     return sanitizeFileName(originalFileName);
   }
 
-  private String buildObjectName(String username, String taskId, String fileName) {
+  private String buildObjectName(String username, UUID taskId, String fileName) {
     return String.format("user/%s/%s/%s", username, taskId, fileName);
   }
 
@@ -81,7 +82,7 @@ public class TaskFileUploadService {
   }
 
   private TaskFileEntity createFileEntity(
-      String fileName, String fileType, String objectName, String uploadedBy, String taskId) {
+      String fileName, String fileType, String objectName, String uploadedBy, UUID taskId) {
     final TaskFileEntity fileEntity = new TaskFileEntity();
     fileEntity.setFileName(fileName);
     fileEntity.setFileType(fileType);

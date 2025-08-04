@@ -42,7 +42,7 @@ public class TaskFileEntity {
   private String uploadedBy;
 
   /** The taskId of task this file is associated with. */
-  @NotNull private String taskId;
+  @NotNull private UUID taskId;
 
   /** Lifecycle callback to set creation timestamp before persisting dto. */
   @PrePersist

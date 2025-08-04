@@ -37,7 +37,7 @@ public class TaskFileRepository {
 
   public List<TaskFileEntity> readAll(
       final String uploadedBy,
-      final String taskId,
+      final UUID taskId,
       final TaskFilePaginationAndSortingDTO taskFilePaginationAndSortingDTO) {
 
     final CriteriaBuilder cb = entityManager.getCriteriaBuilder();
